@@ -3,54 +3,54 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { validationResult } from 'express-validator'; 
 
+// 1. Traitement du formulaire d'ajout (POST)
 export const addUtilisateur = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ 
-            message: "Erreur de validation. Les données soumises sont incomplètes ou invalides.",
-            errors: errors.array() 
-        });
+        return res.render('utilisateurs/add', { error: "Données invalides. Vérifiez les champs." });
     }
+    
     try {
         const { nom_utilisateur, email, mot_de_passe } = req.body;
-
         const salt = await bcrypt.genSalt(10);
         const mot_de_passe_hache = await bcrypt.hash(mot_de_passe, salt);
 
-        const nouvelUtilisateur = await Utilisateur.create({
+        await Utilisateur.create({
             nom_utilisateur: nom_utilisateur,
             email: email,
             mot_de_passe: mot_de_passe_hache 
         });
 
-        res.status(201).json({
-            id: nouvelUtilisateur.id,
-            nom_utilisateur: nouvelUtilisateur.nom_utilisateur,
-            email: nouvelUtilisateur.email
-        });
+        res.redirect('/utilisateurs');
 
     } catch (error) {
-        res.status(400).json({ message: "Erreur lors de la création de l'utilisateur", error: error.message });
+        res.render('utilisateurs/add', { error: "Erreur : " + error.message });
     }
 };
 
+// 2. Récupérer tous les utilisateurs (GET)
 export const getAllUtilisateurs = async (req, res) => {
     try {
         const utilisateurs = await Utilisateur.findAll({
             attributes: { exclude: ['mot_de_passe'] }
         });
-        
-        res.status(200).json(utilisateurs);
+        res.render('utilisateurs/list', { data: utilisateurs });
     } catch (error) {
-        res.status(400).json({ message: "Erreur lors de la récupération des utilisateurs", error: error.message });
+        res.status(400).send("Erreur : " + error.message);
     }
 };
 
+// 3. Afficher le formulaire d'ajout (GET)
+export const formAjoutUtilisateur = (req, res) => {
+    res.render('utilisateurs/add');
+};
+
+// 4. Connexion (POST) - C'est celle qui manquait ou était mal exportée !
 export const login = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ 
-            message: "Erreur de validation. Veuillez fournir un email/nom d'utilisateur et un mot de passe.",
+            message: "Erreur de validation.",
             errors: errors.array() 
         });
     }
@@ -76,5 +76,61 @@ export const login = async (req, res) => {
 
     } catch (error) {
         res.status(500).json({ message: "Erreur lors de la connexion", error: error.message });
+    }
+};
+// --- AJOUTER À LA FIN DE utilisateurController.js ---
+
+// 5. Afficher le formulaire de modification (GET)
+export const getUtilisateurById = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const utilisateur = await Utilisateur.findByPk(id);
+
+        if (!utilisateur) {
+            return res.status(404).send("Utilisateur non trouvé");
+        }
+        
+        res.render('utilisateurs/edit', { utilisateur });
+    } catch (error) {
+        res.status(500).send("Erreur : " + error.message);
+    }
+};
+
+// 6. Traiter la modification (POST)
+export const updateUtilisateur = async (req, res) => {
+    const id = req.params.id;
+    const { nom_utilisateur, email, mot_de_passe } = req.body;
+
+    try {
+        const utilisateur = await Utilisateur.findByPk(id);
+        if (!utilisateur) return res.status(404).send("Utilisateur introuvable");
+
+        // Mise à jour des champs de base
+        utilisateur.nom_utilisateur = nom_utilisateur;
+        utilisateur.email = email;
+
+        // Si un nouveau mot de passe est fourni, on le hache
+        if (mot_de_passe && mot_de_passe.trim() !== "") {
+            const salt = await bcrypt.genSalt(10);
+            utilisateur.mot_de_passe = await bcrypt.hash(mot_de_passe, salt);
+        }
+
+        await utilisateur.save(); // Enregistre les modifs en BDD
+        res.redirect('/utilisateurs');
+
+    } catch (error) {
+        // En cas d'erreur, on réaffiche le formulaire (il faudrait idéalement repasser l'objet utilisateur)
+        res.status(400).send("Erreur lors de la modification : " + error.message);
+    }
+};
+
+// 7. Supprimer un utilisateur (GET pour simplifier, ou DELETE via formulaire)
+export const deleteUtilisateur = async (req, res) => {
+    const id = req.params.id;
+    try {
+        await Utilisateur.destroy({ where: { id: id } });
+        res.redirect('/utilisateurs');
+    } catch (error) {
+        res.status(500).send("Erreur lors de la suppression : " + error.message);
     }
 };

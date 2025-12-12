@@ -21,8 +21,13 @@ import utilisateurRoleRoutes from './routes/utilisateurRoleRoutes.js';
 const app = express();
 const PORT = 5000;
 
-app.use(express.json());
 
+app.set('view engine', 'ejs');
+app.set('views', './views');
+app.use('/public', express.static('public'));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 try {
   await connexion.authenticate();
   console.log('Connexion à la base de données MySQL réussie !');
@@ -60,12 +65,12 @@ try {
 }
 
 app.get('/', (req, res) => {
-  res.send('Serveur d inventaire de jeux vidéo est en ligne !');
+  res.render('index');
 });
-app.use('/api/roles', roleRoutes);
-app.use('/api/plateformes', plateformeRoutes);
-app.use('/api/jeux', jeuRoutes);
-app.use('/api/utilisateurs', utilisateurRoutes);
+app.use('/roles', roleRoutes);
+app.use('/plateformes', plateformeRoutes);
+app.use('/jeux', jeuRoutes);
+app.use('/utilisateurs', utilisateurRoutes);
 app.use('/api/inventaire', inventaireRoutes);
 app.use('/api/assigner-role', utilisateurRoleRoutes);
 app.listen(PORT, () => {

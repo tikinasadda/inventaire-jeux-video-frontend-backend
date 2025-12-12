@@ -1,79 +1,70 @@
 import Role from '../models/Role.js';
-import { validationResult } from 'express-validator'; 
+import { validationResult } from 'express-validator';
 
-export const addRole = async (req, res) => {
-    
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ 
-            message: "Erreur de validation. Le titre du rôle est requis.",
-            errors: errors.array() 
-        });
-    }
-    try {
-        const nouveauRole = await Role.create(req.body);
-        
-        res.status(201).json(nouveauRole);
-    } catch (error) {
-        res.status(400).json({ message: "Erreur lors de la création du rôle", error: error.message });
-    }
-};
-
+// 1. Liste des rôles (Read)
 export const getAllRoles = async (req, res) => {
     try {
         const roles = await Role.findAll();
-        
-        res.status(200).json(roles);
+        res.render('roles/list', { data: roles });
     } catch (error) {
-        res.status(400).json({ message: "Erreur lors de la récupération des rôles", error: error.message });
+        res.status(500).send("Erreur : " + error.message);
     }
 };
+
+// 2. Formulaire Ajout (Get)
+export const formAjoutRole = (req, res) => {
+    res.render('roles/add');
+};
+
+// 3. Traiter l'ajout (Create - Post)
+export const addRole = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.render('roles/add', { error: "Le titre du rôle est requis." });
+    }
+    try {
+        const { titre } = req.body;
+        await Role.create({ titre });
+        res.redirect('/roles');
+    } catch (error) {
+        res.render('roles/add', { error: "Erreur : " + error.message });
+    }
+};
+
+// 4. Formulaire Modification (Get)
+export const getRoleById = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const role = await Role.findByPk(id);
+        
+        if (!role) {
+            return res.status(404).send("Rôle introuvable");
+        }
+        res.render('roles/edit', { role });
+    } catch (error) {
+        res.status(500).send("Erreur : " + error.message);
+    }
+};
+
+// 5. Traiter la modification (Update - Post)
 export const updateRole = async (req, res) => {
-    
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ 
-            message: "Erreur de validation. L'ID ou le titre du rôle est invalide.",
-            errors: errors.array() 
-        });
-    }
+    const id = req.params.id;
+    const { titre } = req.body;
     try {
-        const { id } = req.params; 
-        const [result] = await Role.update(req.body, { 
-            where: { id: id }
-        });
-
-        if (result === 0) { 
-            return res.status(404).json({ message: "Rôle non trouvé ou données identiques" });
-        }
-        
-        res.status(200).json({ message: "Rôle mis à jour avec succès" });
+        await Role.update({ titre }, { where: { id: id } });
+        res.redirect('/roles');
     } catch (error) {
-        res.status(400).json({ message: "Erreur lors de la mise à jour du rôle", error: error.message });
+        res.status(400).send("Erreur : " + error.message);
     }
 };
 
+// 6. Suppression (Delete - Get)
 export const deleteRole = async (req, res) => {
-    
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ 
-            message: "Erreur de validation. L'ID du rôle est invalide.",
-            errors: errors.array() 
-        });
-    }
+    const id = req.params.id;
     try {
-        const { id } = req.params;
-        const result = await Role.destroy({ 
-            where: { id: id }
-        });
-
-        if (result === 0) { 
-            return res.status(404).json({ message: "Rôle non trouvé" });
-        }
-
-        res.status(200).json({ message: "Rôle supprimé avec succès" });
+        await Role.destroy({ where: { id: id } });
+        res.redirect('/roles');
     } catch (error) {
-        res.status(400).json({ message: "Erreur lors de la suppression du rôle", error: error.message });
+        res.status(500).send("Erreur : " + error.message);
     }
 };

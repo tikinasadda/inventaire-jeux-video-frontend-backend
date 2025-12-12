@@ -1,0 +1,28 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+    <h1>Modifier le jeu</h1>
+
+    <form action="/jeux/modifier/<%= jeu.id %>" method="POST" class="mt-4">
+        
+        <div class="mb-3">
+            <label class="form-label">Titre du jeu</label>
+            <input type="text" class="form-control" name="titre" value="<%= jeu.titre %>" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Genre</label>
+            <input type="text" class="form-control" name="genre" value="<%= jeu.genre %>" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Année de sortie</label>
+            <input type="number" class="form-control" name="annee_sortie" value="<%= jeu.annee_sortie %>">
+        </div>
+
+        <button type="submit" class="btn btn-warning">Mettre à jour</button>
+        <a href="/jeux" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+
+<%- include('../partials/footer') %>

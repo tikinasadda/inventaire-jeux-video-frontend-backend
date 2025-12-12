@@ -1,0 +1,36 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>🛡️ Liste des Rôles</h1>
+        <a href="/roles/ajouter" class="btn btn-success">Ajouter un rôle</a>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Titre du Rôle</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if(data && data.length > 0) { %>
+                <% data.forEach(role => { %>
+                    <tr>
+                        <td><%= role.id %></td>
+                        <td><strong><%= role.titre %></strong></td>
+                        <td>
+                            <a href="/roles/modifier/<%= role.id %>" class="btn btn-warning btn-sm">Modifier</a>
+                            <a href="/roles/supprimer/<%= role.id %>" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer ce rôle ?')">Supprimer</a>
+                        </td>
+                    </tr>
+                <% }) %>
+            <% } else { %>
+                <tr><td colspan="3" class="text-center">Aucun rôle trouvé.</td></tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+
+<%- include('../partials/footer') %>

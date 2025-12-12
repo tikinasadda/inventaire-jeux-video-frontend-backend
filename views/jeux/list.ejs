@@ -1,0 +1,44 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>🎮 Liste des Jeux Vidéo</h1>
+        <a href="/jeux/ajouter" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Ajouter un jeu
+        </a>
+    </div>
+
+    <table class="table table-striped table-hover table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Titre</th>
+                <th>Genre</th>
+                <th>Année</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if(data && data.length > 0) { %>
+                <% data.forEach(jeu => { %>
+                    <tr>
+                        <td><%= jeu.id %></td>
+                        <td><strong><%= jeu.titre %></strong></td>
+                        <td><%= jeu.genre %></td>
+                        <td><%= jeu.annee_sortie %></td>
+                        <td>
+                            <a href="/jeux/modifier/<%= jeu.id %>" class="btn btn-warning btn-sm">Modifier</a>
+                            <a href="/jeux/supprimer/<%= jeu.id %>" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer ce jeu ?')">Supprimer</a>
+                        </td>
+                    </tr>
+                <% }) %>
+            <% } else { %>
+                <tr>
+                    <td colspan="5" class="text-center">Aucun jeu trouvé. Commencez par en ajouter un !</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+
+<%- include('../partials/footer') %>

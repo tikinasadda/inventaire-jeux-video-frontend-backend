@@ -1,0 +1,36 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>🎮 Liste des Plateformes</h1>
+        <a href="/plateformes/ajouter" class="btn btn-success">Ajouter une plateforme</a>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if(data && data.length > 0) { %>
+                <% data.forEach(p => { %>
+                    <tr>
+                        <td><%= p.id %></td>
+                        <td><strong><%= p.nom %></strong></td>
+                        <td>
+                            <a href="/plateformes/modifier/<%= p.id %>" class="btn btn-warning btn-sm">Modifier</a>
+                            <a href="/plateformes/supprimer/<%= p.id %>" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer cette plateforme ?')">Supprimer</a>
+                        </td>
+                    </tr>
+                <% }) %>
+            <% } else { %>
+                <tr><td colspan="3" class="text-center">Aucune plateforme trouvée.</td></tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+
+<%- include('../partials/footer') %>

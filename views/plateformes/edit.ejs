@@ -1,0 +1,16 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+    <h1>Modifier la plateforme</h1>
+
+    <form action="/plateformes/modifier/<%= plateforme.id %>" method="POST" class="mt-4">
+        <div class="mb-3">
+            <label class="form-label">Nom de la plateforme</label>
+            <input type="text" class="form-control" name="nom" value="<%= plateforme.nom %>" required>
+        </div>
+        <button type="submit" class="btn btn-warning">Mettre à jour</button>
+        <a href="/plateformes" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+
+<%- include('../partials/footer') %>

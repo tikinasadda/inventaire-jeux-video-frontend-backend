@@ -1,0 +1,31 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+    <h1>Modifier l'utilisateur</h1>
+    
+    <% if (typeof error !== 'undefined') { %>
+        <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+
+    <form action="/utilisateurs/modifier/<%= utilisateur.id %>" method="POST" class="mt-4">
+        <div class="mb-3">
+            <label for="nom_utilisateur" class="form-label">Nom d'utilisateur</label>
+            <input type="text" class="form-control" name="nom_utilisateur" value="<%= utilisateur.nom_utilisateur %>" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" value="<%= utilisateur.email %>" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="mot_de_passe" class="form-label">Nouveau mot de passe (laisser vide pour ne pas changer)</label>
+            <input type="password" class="form-control" name="mot_de_passe">
+        </div>
+
+        <button type="submit" class="btn btn-warning">Mettre à jour</button>
+        <a href="/utilisateurs" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+
+<%- include('../partials/footer') %>

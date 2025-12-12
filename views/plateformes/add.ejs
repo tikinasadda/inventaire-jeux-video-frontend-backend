@@ -1,0 +1,20 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+    <h1>Ajouter une plateforme</h1>
+    
+    <% if (typeof error !== 'undefined') { %>
+        <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+
+    <form action="/plateformes/ajouter" method="POST" class="mt-4">
+        <div class="mb-3">
+            <label class="form-label">Nom de la plateforme</label>
+            <input type="text" class="form-control" name="nom" required placeholder="Ex: PC, PlayStation 5...">
+        </div>
+        <button type="submit" class="btn btn-success">Enregistrer</button>
+        <a href="/plateformes" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+
+<%- include('../partials/footer') %>

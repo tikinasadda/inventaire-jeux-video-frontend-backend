@@ -1,27 +1,36 @@
 import express from 'express';
 import { body } from 'express-validator'; 
-
-import { addJeu, getAllJeux } from '../controllers/jeuController.js';
+import { 
+    getAllJeux, 
+    addJeu, 
+    formAjoutJeu, 
+    getJeuById, 
+    updateJeu, 
+    deleteJeu 
+} from '../controllers/jeuController.js';
 
 const router = express.Router();
 
-router.post(
-  '/', 
-  [
-    body('titre')
-      .notEmpty().withMessage("Le titre du jeu est obligatoire.")
-      .isString().withMessage("Le titre doit être une chaîne de caractères valide."),
-      
-    body('genre')
-      .notEmpty().withMessage("Le genre du jeu est obligatoire."),
-      
-    body('annee_sortie') 
-      .optional()
-      .isInt({ min: 1970, max: new Date().getFullYear() }).withMessage("L'année de sortie doit être une année valide.")
-  ], 
-  addJeu
-);
-
+// Liste
 router.get('/', getAllJeux);
+
+// Formulaire Ajout
+router.get('/ajouter', formAjoutJeu);
+
+// Traitement Ajout
+router.post('/ajouter', [
+    body('titre').notEmpty().withMessage("Le titre est requis."),
+    body('genre').notEmpty().withMessage("Le genre est requis."),
+    body('annee_sortie').optional().isInt({ min: 1950, max: new Date().getFullYear() + 1 }).withMessage("Année invalide")
+], addJeu);
+
+// Formulaire Modification
+router.get('/modifier/:id', getJeuById);
+
+// Traitement Modification
+router.post('/modifier/:id', updateJeu);
+
+// Suppression
+router.get('/supprimer/:id', deleteJeu);
 
 export default router;
