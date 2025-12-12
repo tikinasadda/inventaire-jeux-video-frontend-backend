@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3>🔐 Connexion</h3>
+                </div>
+                <div class="card-body">
+                    
+                    <% if (typeof error !== 'undefined') { %>
+                        <div class="alert alert-danger"><%= error %></div>
+                    <% } %>
+
+                    <form action="/login" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Nom d'utilisateur</label>
+                            <input type="text" class="form-control" name="nom_utilisateur" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Mot de passe</label>
+                            <input type="password" class="form-control" name="mot_de_passe" required>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Se connecter</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <small>Pas encore de compte ? <a href="/utilisateurs/ajouter">Inscrivez-vous</a></small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
