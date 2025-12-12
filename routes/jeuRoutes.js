@@ -8,29 +8,27 @@ import {
     updateJeu, 
     deleteJeu 
 } from '../controllers/jeuController.js';
+// Import des middlewares de sécurité
+import { verifierToken, isAdmin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Liste
+// Public : Voir la liste
 router.get('/', getAllJeux);
 
-// Formulaire Ajout
-router.get('/ajouter', formAjoutJeu);
-
-// Traitement Ajout
-router.post('/ajouter', [
+// Connecté : Ajouter un jeu
+router.get('/ajouter', verifierToken, formAjoutJeu);
+router.post('/ajouter', verifierToken, [
     body('titre').notEmpty().withMessage("Le titre est requis."),
     body('genre').notEmpty().withMessage("Le genre est requis."),
     body('annee_sortie').optional().isInt({ min: 1950, max: new Date().getFullYear() + 1 }).withMessage("Année invalide")
 ], addJeu);
 
-// Formulaire Modification
-router.get('/modifier/:id', getJeuById);
+// Admin : Modifier un jeu
+router.get('/modifier/:id', verifierToken, isAdmin, getJeuById);
+router.post('/modifier/:id', verifierToken, isAdmin, updateJeu);
 
-// Traitement Modification
-router.post('/modifier/:id', updateJeu);
-
-// Suppression
-router.get('/supprimer/:id', deleteJeu);
+// Admin : Supprimer un jeu
+router.get('/supprimer/:id', verifierToken, isAdmin, deleteJeu);
 
 export default router;
